@@ -12,6 +12,11 @@ services:
       MYSQL_USER: "mysql"
       MYSQL_DATABASE: "BPT-DB"
       MYSQL_ROOT_PASSWORD: "GoGoGadgetDatabase!"
+      MYSQL_PASSWORD: "GoGoGadgetDatabase!"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
   
   measurement-service:
     build:
@@ -20,7 +25,12 @@ services:
     ports:
       - 8081:8080
     environment:
-      MySQLDbConnection: "Server=localhost;Port=3306;Database=BPT-DB;User=mysql;Password=GoGoGadgetDatabase!"
+      MySQLDbConnection: "Server=mysql;Port=3306;Database=BPT-DB;User=mysql;Password=GoGoGadgetDatabase!"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      migration-runner:
+        condition: service_completed_successfully
   
   patient-service:
     build:
@@ -29,4 +39,21 @@ services:
     ports:
       - 8082:8080
     environment:
-      MySQLDbConnection: "Server=localhost;Port=3306;Database=BPT-DB;User=mysql;Password=GoGoGadgetDatabase!"
+      MySQLDbConnection: "Server=mysql;Port=3306;Database=BPT-DB;User=mysql;Password=GoGoGadgetDatabase!"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      migration-runner:
+        condition: service_completed_successfully
+  
+  migration-runner:
+    build:
+      context: Models
+      dockerfile: Migration.Dockerfile
+    profiles:
+      - run-migrations
+    environment:
+      MySQLDbConnection: "Server=mysql;Port=3306;Database=BPT-DB;User=mysql;Password=GoGoGadgetDatabase!"
+    depends_on:
+      mysql:
+        condition: service_healthy
