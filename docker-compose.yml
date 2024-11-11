@@ -13,10 +13,12 @@ services:
       MYSQL_DATABASE: "BPT-DB"
       MYSQL_ROOT_PASSWORD: "GoGoGadgetDatabase!"
       MYSQL_PASSWORD: "GoGoGadgetDatabase!"
+    volumes:
+      - mysqldb:/var/lib/mysql
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
-      timeout: 10s
-      retries: 10
+      timeout: 3s
+      retries: 30
   
   measurement-service:
     build:
@@ -31,6 +33,7 @@ services:
         condition: service_healthy
       migration-runner:
         condition: service_completed_successfully
+        required: false
   
   patient-service:
     build:
@@ -45,6 +48,7 @@ services:
         condition: service_healthy
       migration-runner:
         condition: service_completed_successfully
+        required: false
   
   migration-runner:
     build:
@@ -57,3 +61,6 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+        
+volumes:
+  mysqldb:

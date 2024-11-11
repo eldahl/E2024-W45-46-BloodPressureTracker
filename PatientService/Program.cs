@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Models;
-using PatientService.Controllers;
+using PatientService.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

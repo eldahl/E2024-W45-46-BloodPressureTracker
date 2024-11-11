@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using PatientService.Repositories;
 
 namespace PatientService.Controllers;
 
@@ -19,6 +20,13 @@ public class PatientController : ControllerBase
     {
         return _patientRepository.GetBySsn(ssn);
     }
+    
+    [HttpGet("GetPatientMeasurementsBySsn")]
+    public ActionResult<MeasurementsOfPatientDto> GetPatientMeasurementsBySsn([FromQuery] string ssn)
+    {
+        return _patientRepository.GetMeasurementsOfPatient(ssn);
+    }
+ 
 
     [HttpPost("AddPatient")]
     public IActionResult AddPatient([FromBody] Patient patient)

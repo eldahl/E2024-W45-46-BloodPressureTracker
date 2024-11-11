@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Models;
 
@@ -18,6 +19,11 @@ public class BtpDbContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        var dateOnlyToFromDateTimeConverter = new ValueConverter<DateOnly, DateTime>(
+            dateOnlyValue => new DateTime(dateOnlyValue, new TimeOnly(0)),
+            dateTimeValue => DateOnly.FromDateTime(dateTimeValue)
+        );
+ 
         modelBuilder.Entity<Measurement>(entity =>
         {
             // Primary key | Identifier of measurement
@@ -26,7 +32,9 @@ public class BtpDbContext : DbContext
                 .ValueGeneratedOnAdd()
                 .IsRequired();
             
-            entity.Property(p => p.Date).IsRequired();
+            entity.Property(p => p.Date)
+                .IsRequired()
+                .HasConversion(dateOnlyToFromDateTimeConverter);
             entity.Property(p => p.Systolic).IsRequired();
             entity.Property(p => p.Diastolic).IsRequired();
             entity.Property(p => p.Seen);
@@ -52,6 +60,30 @@ public class BtpDbContext : DbContext
                 SSN = "462-59-4864",
                 Name = "Wilber Ma",
                 Mail = "WMA@mail.com"
+            },
+            new Patient 
+            {
+                SSN = "144-75-2929",
+                Name = "Rebeca Pao",
+                Mail = "PAO@mail.com" 
+            },
+            new Patient 
+            {
+                SSN = "178-14-0036",
+                Name = "Raghallach Husson",
+                Mail = "RHusson@mail.com"
+            },
+            new Patient 
+            {
+                SSN = "500-29-2239",
+                Name = "Xena Yun",
+                Mail = "xy@mail.com"
+            },
+            new Patient 
+            {
+                SSN = "509-90-5304",
+                Name = "Helana Clayton",
+                Mail = "Clayton@mail.com"
             }
         );
 
@@ -65,6 +97,42 @@ public class BtpDbContext : DbContext
                 Systolic = 67,
                 Seen = false,
                 PatientSsn = "462-59-4864"
+            },
+            new Measurement 
+            {
+                Id = 2,
+                Date = firstDayOf2024,
+                Diastolic = 200,
+                Systolic = 72,
+                Seen = false,
+                PatientSsn = "144-75-2929"
+            },
+            new Measurement 
+            {
+                Id = 3,
+                Date = firstDayOf2024,
+                Diastolic = 198,
+                Systolic = 64,
+                Seen = false,
+                PatientSsn = "178-14-0036"
+            },
+            new Measurement 
+            {
+                Id = 4,
+                Date = firstDayOf2024.AddDays(1),
+                Diastolic = 120,
+                Systolic = 76,
+                Seen = false,
+                PatientSsn = "500-29-2239"
+            },
+            new Measurement 
+            {
+                Id = 5,
+                Date = firstDayOf2024.AddDays(1),
+                Diastolic = 174,
+                Systolic = 89,
+                Seen = false,
+                PatientSsn = "509-90-5304"
             }
         );
         

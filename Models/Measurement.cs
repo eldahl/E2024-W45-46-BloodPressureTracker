@@ -1,11 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Models;
 
 public class Measurement
 {
     [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; init; }
     public DateOnly Date { get; init; }
     public int Systolic { get; init; }
@@ -13,6 +15,7 @@ public class Measurement
     public bool Seen { get; init; }
     
     // Foreign key to Patient
+    [JsonIgnore]
     [StringLength(20, MinimumLength = 10)]
     public string PatientSsn { get; set; } = null!;
     // Optional reference
