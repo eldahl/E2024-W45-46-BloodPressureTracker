@@ -1,5 +1,5 @@
 # BloodPressureTracker
-
+[![build and test](https://github.com/eldahl/E2024-W45-46-BloodPressureTracker/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/eldahl/E2024-W45-46-BloodPressureTracker/actions/workflows/build-and-test.yml)
 
 ## Migrations
 ### Adding migrations
