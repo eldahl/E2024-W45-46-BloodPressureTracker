@@ -9,9 +9,6 @@ on:
     - '**.csproj'
     - '!Models/Models.csproj'
 
-env:
-  DOTNET_VERSION: '8.0.10' # The .NET SDK version to use
-
 jobs:
   build-and-test:
 
@@ -24,11 +21,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Install dependencies
       run: dotnet restore
