@@ -14,7 +14,10 @@ public class MeasurementRepository : IMeasurementRepository
     
     public Measurement GetById(int id)
     {
-        return _context.Measurements.Select(x => x).First(x => x.Id == id);
+        return _context.Measurements
+            .Include(m => m.Patient)
+            .Select(x => x)
+            .First(x => x.Id == id);
     }
 
     public void Add(Measurement measurement)
