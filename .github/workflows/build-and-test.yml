@@ -5,13 +5,12 @@ on:
   pull_request:
     branches: [ main ]
     paths:
-    - '**.cs'
-    - '**.csproj'
-    - '!Models/Models.csproj'
+    - 'Version-1/**.cs'
+    - 'Version-1/**.csproj'
+    - '!Version-1/Models/Models.csproj'
 
 jobs:
   build-and-test:
-
     name: build-and-test-${{matrix.os}}
     runs-on: ${{ matrix.os }}
     strategy:
