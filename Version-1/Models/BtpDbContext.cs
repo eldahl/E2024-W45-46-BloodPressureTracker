@@ -39,6 +39,9 @@ public class BtpDbContext : DbContext
             entity.Property(p => p.Diastolic).IsRequired();
             entity.Property(p => p.Seen);
         });
+        
+        // Should an index be added? No, this is done automatically for foreign keys in InnoDB.
+        // https://stackoverflow.com/questions/304317/does-mysql-index-foreign-key-columns-automatically
         modelBuilder.Entity<Measurement>()
             .HasOne(m => m.Patient)
             .WithOne()
