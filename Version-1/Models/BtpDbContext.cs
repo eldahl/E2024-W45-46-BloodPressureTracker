@@ -23,6 +23,8 @@ public class BtpDbContext : DbContext
             dateOnlyValue => new DateTime(dateOnlyValue, new TimeOnly(0)),
             dateTimeValue => DateOnly.FromDateTime(dateTimeValue)
         );
+
+        var test = 1;
  
         modelBuilder.Entity<Measurement>(entity =>
         {
