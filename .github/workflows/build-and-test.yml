@@ -5,9 +5,9 @@ on:
   pull_request:
     branches: [ main ]
     paths:
-    - 'Version-1/**.cs'
-    - 'Version-1/**.csproj'
-    - '!Version-1/Models/Models.csproj'
+    - 'Version-1/**/*.cs'
+    - 'Version-1/**/*.csproj'
+    - '!Version-1/Models/*.csproj'
 
 jobs:
   build-and-test:
