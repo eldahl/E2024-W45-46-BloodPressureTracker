@@ -5,8 +5,8 @@ on:
   pull_request:
     branches: [ main ]
     paths:
-      - 'Version-1/**'
-      - '!Version-1/Models/*.csproj'
+      - 'BPT-System/**'
+      - '!BPT-System/Models/*.csproj'
 
 jobs:
   build-and-test:
@@ -19,12 +19,12 @@ jobs:
 
     - name: Install dependencies
       run: dotnet restore
-      working-directory: Version-1/
+      working-directory: BPT-System/
       
     - name: Build
       run: dotnet build --configuration Release --no-restore
-      working-directory: Version-1/
+      working-directory: BPT-System/
     
     - name: Test
       run: dotnet test --no-restore --verbosity normal
-      working-directory: Version-1/
+      working-directory: BPT-System/
