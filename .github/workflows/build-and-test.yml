@@ -5,8 +5,7 @@ on:
   pull_request:
     branches: [ main ]
     paths:
-      - '**.cs'
-      - '**.csproj'
+      - 'Version-1/**'
       - '!Version-1/Models/*.csproj'
 
 jobs:
