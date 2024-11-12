@@ -1,12 +1,12 @@
 using Models;
 
-namespace MeasurementService.Controllers;
+namespace MeasurementService.Repositories;
 
 public interface IMeasurementRepository
 {
-    Measurement GetById(int id);
-    void Add(Measurement measurement);
-    void Update(Measurement measurement);
-    void Delete(Measurement measurement);
-    void DeleteById(int id);
+    Task<Measurement> GetByIdAsync(int id, CancellationToken ct);
+    Task AddAsync(Measurement measurement, CancellationToken ct);
+    Task UpdateAsync(Measurement measurement, CancellationToken ct);
+    Task DeleteAsync(Measurement measurement, CancellationToken ct);
+    Task DeleteByIdAsync(int id, CancellationToken ct);
 }

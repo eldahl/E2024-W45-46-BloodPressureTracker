@@ -1,51 +1,44 @@
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using MeasurementService.Repositories;
 
 namespace MeasurementService.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class MeasurementController : ControllerBase
+public class MeasurementController(IMeasurementRepository measurementRepository) : ControllerBase
 {
-    private readonly IMeasurementRepository _measurementRepository;
-    
-    public MeasurementController(IMeasurementRepository measurementRepository)
-    {
-        _measurementRepository = measurementRepository;
-    }
-
     [HttpGet("GetMeasurementById")]
-    public ActionResult<Measurement> GetMeasurementById([FromQuery] int id)
+    public async Task<ActionResult<Measurement>> GetMeasurementById([FromQuery] int id, CancellationToken ct) 
     {
-        return _measurementRepository.GetById(id);
+        return await measurementRepository.GetByIdAsync(id, ct);
     }
 
     [HttpPost("AddMeasurement")]
-    public IActionResult AddMeasurement([FromBody] Measurement measurement)
+    public async Task<IActionResult> AddMeasurement([FromBody] Measurement measurement, CancellationToken ct)
     {
-        _measurementRepository.Add(measurement);
+        await measurementRepository.AddAsync(measurement, ct);
         return Ok();
     }
 
     [HttpPut("UpdateMeasurement")]
-    public IActionResult UpdateMeasurement([FromBody] Measurement measurement)
+    public async Task<IActionResult> UpdateMeasurement([FromBody] Measurement measurement, CancellationToken ct)
     {
-        _measurementRepository.Update(measurement);
+        await measurementRepository.UpdateAsync(measurement, ct);
         return Ok();
     }
     
     [HttpDelete("DeleteMeasurement")]
-    public IActionResult DeleteMeasurement([FromBody] Measurement measurement)
+    public async Task<IActionResult> DeleteMeasurement([FromBody] Measurement measurement, CancellationToken ct)
     {
-        _measurementRepository.Delete(measurement);
+        await measurementRepository.DeleteAsync(measurement, ct);
         return Ok();
     }
 
     [HttpDelete("DeleteMeasurementById")]
-    public IActionResult DeleteMeasurementById([FromQuery] int id)
+    public async Task<IActionResult> DeleteMeasurementById([FromQuery] int id, CancellationToken ct)
     {
-        _measurementRepository.DeleteById(id);
+        await measurementRepository.DeleteByIdAsync(id, ct);
         return Ok();
     }
 }

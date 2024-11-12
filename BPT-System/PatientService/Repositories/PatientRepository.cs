@@ -3,28 +3,22 @@ using Models;
 
 namespace PatientService.Repositories;
 
-public class PatientRepository : IPatientRepository
+public class PatientRepository(BtpDbContext context) : IPatientRepository
 {
-    private readonly BtpDbContext _context;
-
-    public PatientRepository(BtpDbContext context)
+    public async Task<Patient> GetBySsnAsync(string ssn, CancellationToken ct)
     {
-        _context = context;
+        // Return matching unique SSN
+        return await context.Patients.Select(x => x).FirstAsync(x => x.SSN == ssn, cancellationToken: ct);
     }
     
-    public Patient GetBySsn(string ssn)
+    public async Task<MeasurementsOfPatientDto> GetMeasurementsOfPatientAsync(string patientSsn, CancellationToken ct)
     {
-        return _context.Patients.Select(x => x).First(x => x.SSN == ssn);
-    }
-    
-    public MeasurementsOfPatientDto GetMeasurementsOfPatient(string patientSsn)
-    {
-        Patient patient = GetBySsn(patientSsn);
-        List<MeasurementClean> measurements = new List<MeasurementClean>();
+        Patient patient = await GetBySsnAsync(patientSsn, ct);
+        List<MeasurementClean> measurements = [];
         
         // Get Measurements and convert to list of measurements without patient data.
         // (As that is included already...)
-        _context.Measurements
+        context.Measurements
             .Select(m => m).Where(m => m.PatientSsn == patientSsn)
             .ToList()
             .ForEach(m => measurements.Add(new MeasurementClean() 
@@ -43,24 +37,41 @@ public class PatientRepository : IPatientRepository
         };
     }
 
-    public void Add(Patient patient)
+    public async Task AddAsync(Patient patient, CancellationToken ct)
     {
-        _context.Patients.Add(patient);
+        // Add to context
+        await context.Patients.AddAsync(patient, ct);
+        // Save changes
+        await context.SaveChangesAsync(ct);
     }
 
-    public void Update(Patient patient)
+    public async Task UpdateAsync(Patient patient, CancellationToken ct)
     {
-        _context.Patients.Update(patient);
+        // Fetch row we want to update
+        var toUpdate = await context.Patients.FirstAsync(p => p.SSN == patient.SSN, ct);
+        // Update
+        toUpdate = patient;
+        // Apply changes
+        await context.SaveChangesAsync(ct);
     }
 
-    public void Delete(Patient patient)
+    public async Task DeleteAsync(Patient patient, CancellationToken ct)
     {
-        _context.Patients.Remove(patient);
+        // Fetch row we want to delete
+        var toDelete = await context.Patients.FirstAsync(p => p.SSN == patient.SSN, ct);
+        // Delete
+        context.Patients.Remove(toDelete);
+        // Apply changes
+        await context.SaveChangesAsync(ct);
     }
     
-    public void DeleteBySsn(string ssn)
+    public async Task DeleteBySsnAsync(string ssn, CancellationToken ct)
     {
-        Patient toDelete = _context.Patients.First(x => x.SSN == ssn);
-        _context.Patients.Remove(toDelete);
+        // Fetch row we want to delete
+        var toDelete = await context.Patients.FirstAsync(p => p.SSN == ssn, ct);
+        // Delete
+        context.Patients.Remove(toDelete);
+        // Apply changes
+        await context.SaveChangesAsync(ct);
     }
 }

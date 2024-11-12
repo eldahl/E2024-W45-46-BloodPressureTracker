@@ -1,43 +1,55 @@
 using Microsoft.EntityFrameworkCore;
 using Models;
 
-namespace MeasurementService.Controllers;
+namespace MeasurementService.Repositories;
 
-public class MeasurementRepository : IMeasurementRepository
+public class MeasurementRepository(BtpDbContext context) : IMeasurementRepository
 {
-    private readonly BtpDbContext _context;
-
-    public MeasurementRepository(BtpDbContext context)
+    public async Task<Measurement> GetByIdAsync(int id, CancellationToken ct)
     {
-        _context = context;
-    }
-    
-    public Measurement GetById(int id)
-    {
-        return _context.Measurements
+        // Return patient with Patient.Id == id
+        return await context.Measurements
             .Include(m => m.Patient)
             .Select(x => x)
-            .First(x => x.Id == id);
+            .FirstAsync(x => x.Id == id, ct);
     }
 
-    public void Add(Measurement measurement)
+    public async Task AddAsync(Measurement measurement, CancellationToken ct)
     {
-        _context.Measurements.Add(measurement);
+        // Add to context
+        await context.Measurements.AddAsync(measurement, ct);
+        // Saves changes to db
+        await context.SaveChangesAsync(ct);
     }
 
-    public void Update(Measurement measurement)
+    public async Task UpdateAsync(Measurement measurement, CancellationToken ct)
     {
-        _context.Measurements.Update(measurement);
+        // Fetch row we want to update
+        var toUpdate = await context.Measurements.FirstAsync(m => m.Id == measurement.Id, ct);
+        // Update
+        toUpdate = measurement;
+        context.Measurements.Update(toUpdate);
+        // Apply changes
+        await context.SaveChangesAsync(ct);
     }
 
-    public void Delete(Measurement measurement)
+    public async Task DeleteAsync(Measurement measurement, CancellationToken ct)
     {
-        _context.Measurements.Remove(measurement);
+        // Fetch row we want to delete
+        var toDelete = await context.Measurements.FirstAsync(m => m.Id == measurement.Id, ct);
+        // Delete
+        context.Measurements.Remove(toDelete);
+        // Apply changes
+        await context.SaveChangesAsync(ct);
     }
     
-    public void DeleteById(int id)
+    public async Task DeleteByIdAsync(int id, CancellationToken ct)
     {
-        Measurement toDelete = _context.Measurements.First(x => x.Id == id);
-        _context.Measurements.Remove(toDelete);
+        // Fetch row we want to delete
+        var toDelete = await context.Measurements.FirstAsync(m => m.Id == id, ct);
+        // Delete
+        context.Measurements.Remove(toDelete);
+        // Apply changes
+        await context.SaveChangesAsync(ct);
     }
 }

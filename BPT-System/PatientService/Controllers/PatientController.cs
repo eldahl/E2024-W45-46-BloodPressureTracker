@@ -6,51 +6,47 @@ namespace PatientService.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class PatientController : ControllerBase
+public class PatientController(IPatientRepository patientRepository) : ControllerBase
 {
-    private readonly IPatientRepository _patientRepository;
-    
-    public PatientController(IPatientRepository patientRepository)
-    {
-        _patientRepository = patientRepository;
-    }
 
     [HttpGet("GetPatientBySsn")]
-    public ActionResult<Patient> GetPatientBySsn([FromQuery] string ssn)
+    public async Task<ActionResult<Patient>> GetPatientBySsn([FromQuery] string ssn, CancellationToken ct)
     {
-        return _patientRepository.GetBySsn(ssn);
+        return await patientRepository.GetBySsnAsync(ssn, ct);
     }
     
     [HttpGet("GetPatientMeasurementsBySsn")]
-    public ActionResult<MeasurementsOfPatientDto> GetPatientMeasurementsBySsn([FromQuery] string ssn)
+    public async Task<ActionResult<MeasurementsOfPatientDto>> GetPatientMeasurementsBySsn([FromQuery] string ssn, CancellationToken ct)
     {
-        return _patientRepository.GetMeasurementsOfPatient(ssn);
+        return await patientRepository.GetMeasurementsOfPatientAsync(ssn, ct);
     }
  
 
     [HttpPost("AddPatient")]
-    public IActionResult AddPatient([FromBody] Patient patient)
+    public async Task<IActionResult> AddPatient([FromBody] Patient patient, CancellationToken ct)
     {
-        _patientRepository.Add(patient);
+        await patientRepository.AddAsync(patient, ct);
         return Ok();
     }
 
     [HttpPut("UpdatePatient")]
-    public IActionResult UpdatePatient([FromBody] Patient patient)
+    public async Task<IActionResult> UpdatePatient([FromBody] Patient patient, CancellationToken ct)
     {
-        _patientRepository.Update(patient);
+        await patientRepository.UpdateAsync(patient, ct);
         return Ok();
     }
     
     [HttpDelete("DeletePatient")]
-    public IActionResult DeletePatient([FromBody] Patient patient) {
-        _patientRepository.Delete(patient);
+    public async Task<IActionResult> DeletePatient([FromBody] Patient patient, CancellationToken ct) 
+    {
+        await patientRepository.DeleteAsync(patient, ct);
         return Ok();
     }
     
     [HttpDelete("DeletePatientBySsn")]
-    public IActionResult DeletePatientBySsn([FromQuery] string ssn) {
-        _patientRepository.DeleteBySsn(ssn);
+    public async Task<IActionResult> DeletePatientBySsn([FromQuery] string ssn, CancellationToken ct) 
+    {
+        await patientRepository.DeleteBySsnAsync(ssn, ct);
         return Ok();
     }
     

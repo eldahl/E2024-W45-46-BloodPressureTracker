@@ -1,4 +1,4 @@
-using MeasurementService.Controllers;
+using MeasurementService.Repositories;
 using Models;
 using Microsoft.EntityFrameworkCore;
 
