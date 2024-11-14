@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using FeatureHubSDK;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using Polly;
@@ -16,12 +17,13 @@ public class PatientRepository : IPatientRepository
         _retryPolicy = Policy
             .Handle<Exception>()
             .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                (ex, timeSpan, retryCount) => {
+                (ex, timeSpan, retryCount) =>
+                {
                     Debug.WriteLine($"Retry {retryCount} after {timeSpan.TotalSeconds} seconds due to {ex.Message}");
-                });  
+                });
     }
 
-    private async Task<T> ExecuteAsync<T>(Func<Task<T>> action) 
+    private async Task<T> ExecuteAsync<T>(Func<Task<T>> action)
     {
         return await _retryPolicy.ExecuteAsync(action);
     }
@@ -33,7 +35,7 @@ public class PatientRepository : IPatientRepository
     public async Task<Patient> GetBySsnAsync(string ssn, CancellationToken ct)
     {
         // Return matching unique SSN
-        return await ExecuteAsync(async () => await _context.Patients.Select(x => x).FirstAsync(x => x.SSN == ssn, cancellationToken: ct));
+        return await ExecuteAsync(async () => await _context.Patients.FirstAsync(x => x.SSN == ssn, ct));
     }
     
     public async Task<MeasurementsOfPatientDto> GetMeasurementsOfPatientAsync(string patientSsn, CancellationToken ct)
@@ -85,6 +87,7 @@ public class PatientRepository : IPatientRepository
             var toUpdate = await _context.Patients.FirstAsync(p => p.SSN == patient.SSN, ct);
             // Update
             toUpdate = patient;
+            _context.Patients.Update(toUpdate);
             // Apply changes
             await _context.SaveChangesAsync(ct);
         });
