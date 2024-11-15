@@ -12,7 +12,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
 // Feature Hub
-var fhConfig = new EdgeFeatureHubConfig("http://localhost:8085", Environment.GetEnvironmentVariable("FH_SDK_KEY"));
+var fhConfig = new EdgeFeatureHubConfig("http://featurehub:8085", Environment.GetEnvironmentVariable("FH_SDK_KEY"));
 builder.Services.AddSingleton<IClientContext>(await fhConfig.NewContext().Build());
 
 // Db and repository for controller(s)

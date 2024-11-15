@@ -6,7 +6,6 @@ services:
       MYSQL_DATABASE: "BPT-DB"
       MYSQL_ROOT_PASSWORD: "GoGoGadgetDatabase!"
       MYSQL_PASSWORD: "GoGoGadgetDatabase!"
-    restart: always
     volumes:
       - mysqldb:/var/lib/mysql
     healthcheck:
@@ -18,33 +17,35 @@ services:
     build:
       context: .
       dockerfile: MeasurementService/Dockerfile
-    restart: always
     ports:
       - 8081:8080
     environment:
       MySQLDbConnection: "Server=mysql;Port=3306;Database=BPT-DB;User=mysql;Password=GoGoGadgetDatabase!"
+      FH_SDK_KEY: "524be8f7-30ae-4c8d-9d31-b21ea98849e7/JCqZNWzFZXp8jVFC5m9wu402zTeImE*0bgLxwSiUCH5RVcVvUsg"
     depends_on:
       mysql:
         condition: service_healthy
       migration-runner:
         condition: service_completed_successfully
         required: false
-  
+    restart: always
+
   patient-service:
     build:
       context: .
       dockerfile: PatientService/Dockerfile
-    restart: always
     ports:
       - 8082:8080
     environment:
       MySQLDbConnection: "Server=mysql;Port=3306;Database=BPT-DB;User=mysql;Password=GoGoGadgetDatabase!"
+      FH_SDK_KEY: "524be8f7-30ae-4c8d-9d31-b21ea98849e7/JCqZNWzFZXp8jVFC5m9wu402zTeImE*0bgLxwSiUCH5RVcVvUsg"
     depends_on:
       mysql:
         condition: service_healthy
       migration-runner:
         condition: service_completed_successfully
         required: false
+    restart: always
   
   migration-runner:
     build:
@@ -58,5 +59,13 @@ services:
       mysql:
         condition: service_healthy
         
+  featurehub:
+    image: featurehub/party-server:latest
+    volumes:
+      - featurehub:/db
+    ports:
+      - 8085:8085
+
 volumes:
+  featurehub:
   mysqldb:
